@@ -11,22 +11,6 @@ import javax.inject.Singleton
 
 @Singleton
 class ScyllaDBRepository(private val cqlSession: CqlSession) : ProductRepositoryPort {
-    override fun save(productEntity: ProductEntity): ProductEntity {
-        productEntity.id = UUID.randomUUID()
-        cqlSession.execute(
-            SimpleStatement
-                .newInstance(
-                    "INSERT INTO product(id, name, category, price, stock) VALUES (?,?,?,?,?)",
-                    productEntity.id,
-                    productEntity.name,
-                    productEntity.category,
-                    productEntity.price,
-                    productEntity.stock
-                )
-        )
-
-        return productEntity
-    }
 
     override fun findAll(): List<ProductEntity> {
         val rows = cqlSession.execute(
@@ -70,29 +54,6 @@ class ScyllaDBRepository(private val cqlSession: CqlSession) : ProductRepository
                 row.getBigDecimal(CqlIdentifier.fromCql("price"))!!,
                 row.getInt(CqlIdentifier.fromCql("stock"))!!
             )
-        )
-    }
-
-    override fun update(productEntity: ProductEntity): ProductEntity {
-        cqlSession.execute(
-            SimpleStatement
-                .newInstance(
-                    "UPDATE product SET name = ?, category = ?, price = ?, stock = ? WHERE id = ?",
-                    productEntity.name,
-                    productEntity.category,
-                    productEntity.price,
-                    productEntity.stock,
-                    productEntity.id
-                )
-        )
-
-        return productEntity
-    }
-
-    override fun delete(productEntity: ProductEntity) {
-        cqlSession.execute(
-            SimpleStatement
-                .newInstance("DELETE from product where ID = ?", productEntity.id)
         )
     }
 

@@ -10,5 +10,4 @@ data class ProductEntity(
     val category: String = "",
     val price: BigDecimal = ZERO,
     val stock: Int = Int.MIN_VALUE
-
 )

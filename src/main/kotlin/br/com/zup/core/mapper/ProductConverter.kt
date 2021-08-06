@@ -31,7 +31,6 @@ class ProductConverter {
         fun toProductList(productEntityList: List<ProductEntity>) = productEntityList.map { toProduct(it) }
 
         fun toResponseList(productList: List<Product>) = productList.map { toResponse(it) }
-
     }
 }
 

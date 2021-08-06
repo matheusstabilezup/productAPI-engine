@@ -1,16 +1,16 @@
 package br.com.zup.database.repository
 
-import br.com.zup.core.port.ProductRepositoryPort
 import br.com.zup.database.entity.ProductEntity
 import com.datastax.oss.driver.api.core.CqlIdentifier
 import com.datastax.oss.driver.api.core.CqlSession
 import com.datastax.oss.driver.api.core.cql.SimpleStatement
-import java.util.Optional
+import io.micronaut.http.HttpStatus
+import io.micronaut.http.exceptions.HttpStatusException
 import java.util.UUID
 import javax.inject.Singleton
 
 @Singleton
-class ScyllaDBRepository(private val cqlSession: CqlSession) : ProductRepositoryPort {
+class ProductRepositoryScyllaImpl(private val cqlSession: CqlSession) : ProductRepository {
 
     override fun findAll(): List<ProductEntity> {
         val rows = cqlSession.execute(
@@ -37,24 +37,21 @@ class ScyllaDBRepository(private val cqlSession: CqlSession) : ProductRepository
         return products
     }
 
-    override fun findById(id: UUID): Optional<ProductEntity> {
+    override fun findById(id: UUID): ProductEntity {
         val row = cqlSession.execute(
             SimpleStatement
                 .newInstance(
                     "SELECT * FROM product WHERE id = ?",
                     id
                 )
-        ).firstOrNull() ?: return Optional.empty()
+        ).firstOrNull() ?: throw HttpStatusException(HttpStatus.NOT_FOUND, "Product not found")
 
-        return Optional.of(
-            ProductEntity(
-                row.getUuid(CqlIdentifier.fromCql("id"))!!,
-                row.getString(CqlIdentifier.fromCql("name"))!!,
-                row.getString(CqlIdentifier.fromCql("category"))!!,
-                row.getBigDecimal(CqlIdentifier.fromCql("price"))!!,
-                row.getInt(CqlIdentifier.fromCql("stock"))!!
-            )
+        return ProductEntity(
+            row.getUuid(CqlIdentifier.fromCql("id"))!!,
+            row.getString(CqlIdentifier.fromCql("name"))!!,
+            row.getString(CqlIdentifier.fromCql("category"))!!,
+            row.getBigDecimal(CqlIdentifier.fromCql("price"))!!,
+            row.getInt(CqlIdentifier.fromCql("stock"))!!
         )
     }
-
 }

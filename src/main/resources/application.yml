@@ -1,17 +1,17 @@
+endpoints:
+  health:
+    enabled: true
 micronaut:
   server:
     cors:
       enabled: true
   application:
     name: productAPI
-endpoints:
-  health:
-    enabled: true
 cassandra:
   default:
     basic:
       contact-points:
-        - 172.17.0.2:9042
+        - 192.168.100.2:9042
       session-keyspace: product
       load-balancing-policy:
         local-datacenter: datacenter1

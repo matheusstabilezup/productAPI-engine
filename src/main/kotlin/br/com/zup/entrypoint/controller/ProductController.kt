@@ -12,11 +12,9 @@ import java.util.UUID
 @Controller("/v1/productAPI/products")
 @Validated
 class ProductController(private val productService: ProductServicePort) {
-
     @Get
     fun getAll() = HttpResponse.ok(ProductConverter.toResponseList(productService.findAll()))
 
     @Get("/{id}")
     fun getById(@PathVariable id: UUID) = HttpResponse.ok(ProductConverter.toResponse(productService.findById(id)))
-
 }
